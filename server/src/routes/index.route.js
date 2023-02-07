@@ -3,6 +3,6 @@ import accountRouter from "./user/account.route.js";
 
 const mainRouter = express();
 
-// mainRouter.use(accountRouter);
+mainRouter.use(accountRouter);
 
-// export default mainRouter;
+export default mainRouter;

@@ -1,12 +1,30 @@
+import signUpModel from "../../models/signUp.mongo.js";
+import { db } from "../../services/mongo.js";
+
 async function signUp(request, response, next) {
-  const user = request.body;
+  const { name, email, password } = request.body;
 
   try {
-    return response.status(200).send(user);
+    const alreadyRegistered = await db.collection('users').findOne({ email });
+    if (alreadyRegistered) return response.status(401).send('User already registered');
+
+    const userModel = new signUpModel({
+      name,
+      email,
+      password,
+    });
+    userModel.save((error, doc) => {
+      if (error) {
+        return response.status(503).send('Error during record insertion: ', error);
+      }
+
+      return response.status(201).send(name);
+    });
+
   } catch (error) {
     console.log('Error on signUp: ', error);
 
-    throw new Error(error);
+    return response.sendStatus(500);
   }
 };
 
