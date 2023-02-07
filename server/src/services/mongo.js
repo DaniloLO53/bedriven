@@ -21,7 +21,6 @@ async function mongoDisconnect() {
   await mongoose.disconnect();
 };
 
-
 export {
   db,
   mongoConnect,
