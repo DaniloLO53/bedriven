@@ -1,6 +1,24 @@
 import signUpModel from "../../models/signUp.mongo.js";
 import { db } from "../../services/mongo.js";
 
+async function signIn(request, response, next) {
+  const { email, password } = request.body;
+
+  try {
+    const user = await db.collection('users').findOne({ email });
+
+    if (user) {
+      return response.status(200).send(user);
+    }
+
+    return response.status(401).send('Could not find user');
+
+  } catch (error) {
+    console.log('Error on signUp: ', error);
+    return response.sendStatus(500);
+  }
+};
+
 async function signUp(request, response, next) {
   const { name, email, password } = request.body;
 
@@ -30,4 +48,5 @@ async function signUp(request, response, next) {
 
 export {
   signUp,
+  signIn,
 };

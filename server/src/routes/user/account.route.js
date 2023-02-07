@@ -1,10 +1,13 @@
 import express from 'express';
-import { signUpValidator } from '../../middlewares/userValidator.middleware.js';
-import { signUp } from './account.controller.js';
+import {
+  signInValidator,
+  signUpValidator,
+} from '../../middlewares/userValidator.middleware.js';
+import { signIn, signUp } from './account.controller.js';
 
 const accountRouter = express.Router();
 
 accountRouter.post('/sign-up', signUpValidator, signUp);
+accountRouter.post('/sign-in', signInValidator, signIn);
 
 export default accountRouter;
-
