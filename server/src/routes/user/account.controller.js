@@ -69,7 +69,7 @@ async function signUp(request, response, next) {
         return response.status(503).send('Error during record insertion: ', error);
       }
 
-      return response.status(201).send(name);
+      return response.sendStatus(201);
     });
 
   } catch (error) {
