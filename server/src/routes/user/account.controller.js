@@ -1,5 +1,6 @@
 import signUpModel from "../../models/signUp.mongo.js";
 import { db } from "../../services/mongo.js";
+import chalk from 'chalk';
 
 async function signIn(request, response, next) {
   const { email, password } = request.body;
@@ -8,13 +9,14 @@ async function signIn(request, response, next) {
     const user = await db.collection('users').findOne({ email });
 
     if (user) {
+      console.log('User: ', chalk.yellow(user))
       return response.status(200).send(user);
     }
 
     return response.status(401).send('Could not find user');
 
   } catch (error) {
-    console.log('Error on signUp: ', error);
+    console.log('Error on signUp: ', chalk.bgBlue(error));
     return response.sendStatus(500);
   }
 };
