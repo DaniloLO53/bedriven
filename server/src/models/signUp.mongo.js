@@ -13,6 +13,10 @@ const signUpSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  isAdmin: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const signUpModel = mongoose.model('User', signUpSchema);

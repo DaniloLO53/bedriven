@@ -9,6 +9,7 @@ const confirmPasswordError = new Error('Does not match with the password');
 const signUpSchema = Joi.object({
   name: Joi.string().trim().required(),
   email: Joi.string().email().trim().required(),
+  isAdmin: Joi.boolean().required(),
   password: Joi.string().trim().regex(new RegExp(pattern)).error(passwordError).required(),
   confirmPassword: Joi.valid(Joi.ref('password')).error(confirmPasswordError).required(),
 });

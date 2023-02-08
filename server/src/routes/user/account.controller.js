@@ -1,6 +1,31 @@
 import signUpModel from "../../models/signUp.mongo.js";
+import fs from 'fs';
+import jwt from 'jsonwebtoken';
 import { db } from "../../services/mongo.js";
 import chalk from 'chalk';
+
+async function deleteUser(request, response, next) {
+  const auth = request.headers.authorization;
+
+  try {
+    if (auth) {
+      const token = auth.split(' ')[1];
+
+      jwt.verify(token, 'admin', (error, payload) => {
+        if (error) return response.status(403).send('Token incorrect');
+
+        request.user = payload;
+        next();
+      });
+    } else {
+      return response.status(401).send('Not auth')
+    }
+  } catch (error) {
+    console.log('Error', error);
+
+    return response.sendStatus(500);
+  }
+};
 
 async function signIn(request, response, next) {
   const { email, password } = request.body;
@@ -8,21 +33,26 @@ async function signIn(request, response, next) {
   try {
     const user = await db.collection('users').findOne({ email });
 
-    if (user) {
-      console.log('User: ', chalk.yellow(user))
-      return response.status(200).send(user);
-    }
+    if (user && password === user.password) {
+
+      const token = jwt.sign({
+        id: user._id,
+        isAdmin: user.isAdmin
+      }, 'admin');
+
+      return response.status(200).send({ ...user, token });
+    };
 
     return response.status(401).send('Could not find user');
 
   } catch (error) {
-    console.log('Error on signUp: ', chalk.bgBlue(error));
+    console.log('Error on signIn: ', chalk.blue(error));
     return response.sendStatus(500);
   }
 };
 
 async function signUp(request, response, next) {
-  const { name, email, password } = request.body;
+  const { name, email, password, isAdmin } = request.body;
 
   try {
     const alreadyRegistered = await db.collection('users').findOne({ email });
@@ -32,6 +62,7 @@ async function signUp(request, response, next) {
       name,
       email,
       password,
+      isAdmin,
     });
     userModel.save((error, doc) => {
       if (error) {
@@ -51,4 +82,5 @@ async function signUp(request, response, next) {
 export {
   signUp,
   signIn,
+  deleteUser,
 };
